@@ -8,6 +8,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.wallet import Wallet, Transaction, LedgerEntry
 from app.schemas.transfer import P2PTransferRequest, TransactionHistoryQuery
 from app.services.wallet import WalletService
+from app.services.kyc import KYCService
+from app.services.audit import AuditService
 
 
 class TransferService:
@@ -60,9 +62,11 @@ class TransferService:
             await db.execute(sender_stmt)
             await db.execute(recipient_stmt)
 
-        # 6. Check sender balance
+        # 6. Check sender balance & KYC daily transfer limits
         if sender_wallet.balance < transfer_in.amount:
             raise ValueError(f"Insufficient funds. Wallet balance: ${sender_wallet.balance:.2f}")
+
+        await KYCService.validate_daily_transfer_limit(db, sender_user_id, transfer_in.amount)
 
         # 7. Generate reference ID
         reference_id = cls.generate_reference_id()
