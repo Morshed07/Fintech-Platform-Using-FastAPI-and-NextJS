@@ -44,6 +44,48 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
+// Auto-refresh expired Access Tokens silently using Refresh Token
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (
+      error.response?.status === 401 &&
+      originalRequest &&
+      !originalRequest._retry &&
+      !originalRequest.url?.includes('/auth/login') &&
+      !originalRequest.url?.includes('/auth/refresh')
+    ) {
+      originalRequest._retry = true;
+      if (typeof window !== 'undefined') {
+        const refreshToken = localStorage.getItem('refresh_token');
+        if (refreshToken) {
+          try {
+            const refreshRes = await axios.post(`${API_BASE_URL}/auth/refresh`, {
+              refresh_token: refreshToken,
+            });
+            const newAccessToken = refreshRes.data.access_token;
+            localStorage.setItem('access_token', newAccessToken);
+            if (refreshRes.data.refresh_token) {
+              localStorage.setItem('refresh_token', refreshRes.data.refresh_token);
+            }
+            originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+            return apiClient(originalRequest);
+          } catch (refreshErr) {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            if (window.location.pathname !== '/login') {
+              window.location.href = '/login';
+            }
+          }
+        }
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 // Auth Endpoints
 export const authApi = {
   register: async (data: { full_name: string; email: string; password: string; re_password: string }): Promise<MessageResponse> => {
