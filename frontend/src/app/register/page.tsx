@@ -11,6 +11,7 @@ export default function RegisterPage() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rePassword, setRePassword] = useState('');
   const [otp, setOtp] = useState('');
   const [step, setStep] = useState<'REGISTER' | 'OTP'>('REGISTER');
   const [loading, setLoading] = useState(false);
@@ -20,11 +21,24 @@ export default function RegisterPage() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    if (step === 'REGISTER') {
+      if (password !== rePassword) {
+        setError('Passwords do not match');
+        return;
+      }
+    }
+
     setLoading(true);
 
     try {
       if (step === 'REGISTER') {
-        const res = await authApi.register({ full_name: fullName, email, password });
+        const res = await authApi.register({
+          full_name: fullName,
+          email,
+          password,
+          re_password: rePassword,
+        });
         setMessage(res.message);
         setStep('OTP');
       } else {
@@ -105,6 +119,23 @@ export default function RegisterPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    minLength={6}
+                    className="glass-input w-full rounded-xl pl-10 pr-4 py-3 text-sm"
+                  />
+                  <Lock className="absolute left-3 top-3.5 h-4 w-4 text-gray-400" />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-300 mb-1">Confirm Password</label>
+                <div className="relative">
+                  <input
+                    type="password"
+                    placeholder="••••••••"
+                    value={rePassword}
+                    onChange={(e) => setRePassword(e.target.value)}
+                    required
+                    minLength={6}
                     className="glass-input w-full rounded-xl pl-10 pr-4 py-3 text-sm"
                   />
                   <Lock className="absolute left-3 top-3.5 h-4 w-4 text-gray-400" />

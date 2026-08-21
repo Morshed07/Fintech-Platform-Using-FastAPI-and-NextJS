@@ -46,7 +46,7 @@ apiClient.interceptors.request.use((config) => {
 
 // Auth Endpoints
 export const authApi = {
-  register: async (data: { full_name: string; email: string; password: string }): Promise<MessageResponse> => {
+  register: async (data: { full_name: string; email: string; password: string; re_password: string }): Promise<MessageResponse> => {
     const res = await apiClient.post('/auth/register', data);
     return res.data;
   },
