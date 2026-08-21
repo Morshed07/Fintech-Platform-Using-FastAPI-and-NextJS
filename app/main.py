@@ -7,6 +7,9 @@ from app.core.config import settings
 from app.core.database import engine, Base
 from app.core.redis import init_redis, close_redis
 from app.api.v1.auth import router as auth_router
+from app.api.v1.wallets import router as wallets_router
+from app.api.v1.transfers import router as transfers_router
+from app.core.idempotency import IdempotencyMiddleware
 
 
 @asynccontextmanager
@@ -32,6 +35,8 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+app.add_middleware(IdempotencyMiddleware)
+
 # Ensure uploads folder exists
 os.makedirs("uploads/avatars", exist_ok=True)
 
@@ -40,6 +45,8 @@ app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # Include Routers
 app.include_router(auth_router, prefix=settings.API_V1_STR)
+app.include_router(wallets_router, prefix=settings.API_V1_STR)
+app.include_router(transfers_router, prefix=settings.API_V1_STR)
 
 
 @app.get('/')

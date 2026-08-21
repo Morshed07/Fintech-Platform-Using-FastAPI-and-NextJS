@@ -12,6 +12,7 @@ from app.core.security import (
 from app.core.config import settings
 from app.core.redis import RedisOTPService, RedisTokenService
 from app.services.email import EmailQueueService, generate_otp
+from app.services.wallet import WalletService
 from app.models.users import User
 from app.schemas.auth import (
     UserRegister,
@@ -108,10 +109,13 @@ class AuthService:
         # 3. Clean up OTP in Redis
         await RedisOTPService.delete_otp(verify_in.email)
 
-        # 4. Mark user verified in DB
+        # 4. Mark user verified in DB & auto-provision primary USD wallet
         user.is_verified = True
         await db.commit()
         await db.refresh(user)
+
+        # Provision wallet
+        await WalletService.create_user_wallet(db, user.id)
 
         # 5. Generate JWT tokens
         access_token = create_access_token({

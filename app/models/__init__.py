@@ -1,5 +1,9 @@
 from .users import User
+from .wallet import Wallet, Transaction, LedgerEntry
 
 __all__ = [
-    "User"
+    "User",
+    "Wallet",
+    "Transaction",
+    "LedgerEntry"
 ]

@@ -19,7 +19,7 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 from app.core.database import Base, DATABASE_URL
-from app.models import User
+import app.models
 
 sync_db_url = DATABASE_URL.replace("+aiosqlite", "")
 config.set_main_option("sqlalchemy.url", sync_db_url)
