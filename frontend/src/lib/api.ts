@@ -19,6 +19,20 @@ export const apiClient = axios.create({
   },
 });
 
+export function formatErrorMessage(err: any, fallback = 'An error occurred'): string {
+  const detail = err?.response?.data?.detail;
+  if (typeof detail === 'string') {
+    return detail;
+  }
+  if (Array.isArray(detail)) {
+    return detail.map((e: any) => e.msg || e.detail || JSON.stringify(e)).join(', ');
+  }
+  if (typeof detail === 'object' && detail !== null) {
+    return detail.msg || JSON.stringify(detail);
+  }
+  return err?.message || fallback;
+}
+
 // Auto-attach JWT Bearer token from localStorage
 apiClient.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {

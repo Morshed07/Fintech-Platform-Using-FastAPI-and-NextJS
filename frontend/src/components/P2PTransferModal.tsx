@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { X, Send, Lock, AlertCircle } from 'lucide-react';
-import { transferApi } from '@/lib/api';
+import { transferApi, formatErrorMessage } from '@/lib/api';
 
 interface P2PTransferModalProps {
   isOpen: boolean;
@@ -55,7 +55,7 @@ export default function P2PTransferModal({ isOpen, onClose, onSuccess }: P2PTran
       setPin('');
       setDescription('');
     } catch (err: any) {
-      setError(err.response?.data?.detail || err.message || 'Transfer failed. Please check details.');
+      setError(formatErrorMessage(err, 'Transfer failed. Please check details.'));
     } finally {
       setLoading(false);
     }

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { X, KeyRound, ShieldCheck, AlertCircle } from 'lucide-react';
-import { walletApi } from '@/lib/api';
+import { walletApi, formatErrorMessage } from '@/lib/api';
 
 interface SetPinModalProps {
   isOpen: boolean;
@@ -40,7 +40,7 @@ export default function SetPinModal({ isOpen, onClose, onSuccess }: SetPinModalP
       setPin('');
       setConfirmPin('');
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to update PIN.');
+      setError(formatErrorMessage(err, 'Failed to update PIN.'));
     } finally {
       setLoading(false);
     }

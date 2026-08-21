@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { X, ArrowDownLeft, Lock, AlertCircle } from 'lucide-react';
-import { gatewayApi } from '@/lib/api';
+import { gatewayApi, formatErrorMessage } from '@/lib/api';
 
 interface WithdrawModalProps {
   isOpen: boolean;
@@ -44,7 +44,7 @@ export default function WithdrawModal({ isOpen, onClose, onSuccess }: WithdrawMo
       setBankCode('');
       setPin('');
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Withdrawal failed. Check balance and PIN.');
+      setError(formatErrorMessage(err, 'Withdrawal failed. Check balance and PIN.'));
     } finally {
       setLoading(false);
     }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { kycApi } from '@/lib/api';
+import { kycApi, formatErrorMessage } from '@/lib/api';
 import { KYC } from '@/lib/types';
 import { ShieldCheck, FileCheck, AlertCircle, CheckCircle2, Award } from 'lucide-react';
 
@@ -41,7 +41,7 @@ export default function KYCPage() {
       setMessage(`Verification successful! Upgraded to ${updated.tier} ($${Number(updated.daily_limit).toLocaleString()}/day limit).`);
       setDocumentNumber('');
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'KYC submission failed.');
+      setError(formatErrorMessage(err, 'KYC submission failed.'));
     } finally {
       setLoading(false);
     }

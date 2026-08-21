@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { X, PlusCircle, AlertCircle } from 'lucide-react';
-import { gatewayApi } from '@/lib/api';
+import { gatewayApi, formatErrorMessage } from '@/lib/api';
 
 interface DepositModalProps {
   isOpen: boolean;
@@ -38,7 +38,7 @@ export default function DepositModal({ isOpen, onClose, onSuccess }: DepositModa
       onClose();
       setAmount('');
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Deposit failed.');
+      setError(formatErrorMessage(err, 'Deposit failed.'));
     } finally {
       setLoading(false);
     }

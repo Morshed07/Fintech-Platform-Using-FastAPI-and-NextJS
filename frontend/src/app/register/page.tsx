@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Wallet, User as UserIcon, Mail, Lock, AlertCircle, CheckCircle } from 'lucide-react';
-import { authApi } from '@/lib/api';
+import { authApi, formatErrorMessage } from '@/lib/api';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -32,7 +32,7 @@ export default function RegisterPage() {
         router.push('/dashboard');
       }
     } catch (err: any) {
-      setError(err.response?.data?.detail || err.message || 'Registration failed.');
+      setError(formatErrorMessage(err, 'Registration failed.'));
     } finally {
       setLoading(false);
     }

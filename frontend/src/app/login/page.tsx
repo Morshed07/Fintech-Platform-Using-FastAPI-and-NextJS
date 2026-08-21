@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Wallet, Lock, Mail, AlertCircle } from 'lucide-react';
-import { authApi } from '@/lib/api';
+import { authApi, formatErrorMessage } from '@/lib/api';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -29,8 +29,8 @@ export default function LoginPage() {
         router.push('/dashboard');
       }
     } catch (err: any) {
-      const msg = err.response?.data?.detail || 'Authentication failed.';
-      if (msg.includes('not verified')) {
+      const msg = formatErrorMessage(err, 'Authentication failed.');
+      if (typeof msg === 'string' && msg.includes('not verified')) {
         setShowOtpInput(true);
         setError('Account not verified. Please enter the 6-digit OTP code sent to your email.');
       } else {
